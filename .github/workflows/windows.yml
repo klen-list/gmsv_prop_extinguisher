@@ -1,0 +1,69 @@
+name: Windows
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+        
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.1
+    
+    - name: Clone garrysmod_common/master
+      uses: actions/checkout@v2
+      with:
+        repository: 'danielga/garrysmod_common'
+        ref: 'master'
+        path: 'third-party/garrysmod_common'
+        submodules: 'recursive'
+
+    - name: Install Premake
+      run: |
+         curl -L https://github.com/premake/premake-core/releases/download/v5.0.0-beta1/premake-5.0.0-beta1-windows.zip -o premake.zip
+         tar -xf premake.zip
+
+    - name: "[x32] Generate Project"
+      run: |
+        ./premake5.exe vs2019
+
+    - name: "[x32] Building"
+      run: |
+        cd projects/windows/vs2019
+        msbuild /p:Configuration=ReleaseWithSymbols /p:Platform=Win32 -m network.sln
+
+    - name: "[x32] Uploading"
+      uses: actions/upload-artifact@v2
+      with:
+        name: gmsv_prop_extinguisher_win32.dll
+        if-no-files-found: error
+        path: projects/windows/vs2019/x86/ReleaseWithSymbols/gmsv_prop_extinguisher_win32.dll
+        
+    - name: Clone garrysmod_common/x86-64-support-sourcesdk
+      uses: actions/checkout@v2
+      with:
+        repository: 'danielga/garrysmod_common'
+        ref: 'x86-64-support-sourcesdk'
+        path: 'third-party/garrysmod_common'
+        submodules: 'recursive'
+    
+    - name: "[x64] Generate Project"
+      run: |
+        ./premake5.exe vs2019
+
+    - name: "[x64] Building"
+      run: |
+        cd projects/windows/vs2019
+        msbuild /p:Configuration=ReleaseWithSymbols /p:Platform=x64 -m network.sln
+
+    - name: "[x64] Uploading"
+      uses: actions/upload-artifact@v2
+      with:
+        name: gmsv_prop_extinguisher_win64.dll
+        if-no-files-found: error
+        path: projects/windows/vs2019/x86_64/ReleaseWithSymbols/gmsv_prop_extinguisher_win64.dll
