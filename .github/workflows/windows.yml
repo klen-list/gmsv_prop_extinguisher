@@ -35,7 +35,7 @@ jobs:
     - name: "[x32] Building"
       run: |
         cd projects/windows/vs2019
-        msbuild /p:Configuration=ReleaseWithSymbols /p:Platform=Win32 -m network.sln
+        msbuild /p:Configuration=ReleaseWithSymbols /p:Platform=Win32 -m prop_extinguisher.sln
 
     - name: "[x32] Uploading"
       uses: actions/upload-artifact@v2
@@ -59,7 +59,7 @@ jobs:
     - name: "[x64] Building"
       run: |
         cd projects/windows/vs2019
-        msbuild /p:Configuration=ReleaseWithSymbols /p:Platform=x64 -m network.sln
+        msbuild /p:Configuration=ReleaseWithSymbols /p:Platform=x64 -m prop_extinguisher.sln
 
     - name: "[x64] Uploading"
       uses: actions/upload-artifact@v2
